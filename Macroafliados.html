@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Macroafilados - Registro</title>
+
+    <!-- Librería para Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff9c4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #f57f17;
+        }
+
+        .modulo {
+            background-color: #fff176;
+            border: 2px solid #fbc02d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #e65100;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+        }
+
+        button {
+            background-color: #fbc02d;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #f9a825;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Macroafilados</h1>
+
+    <!-- MÓDULO 1 -->
+    <div class="modulo">
+        <h2>1. Registro de Herramientas</h2>
+        <input type="text" id="herramienta" placeholder="Nombre de la herramienta">
+        <input type="text" id="cliente" placeholder="Cliente">
+        <button onclick="guardarHerramienta()">Guardar herramienta</button>
+    </div>
+
+    <!-- MÓDULO 2 -->
+    <div class="modulo">
+        <h2>2. Entrada de Dinero</h2>
+        <input type="number" id="entradaMonto" placeholder="Monto de entrada">
+        <input type="text" id="entradaDesc" placeholder="Descripción">
+        <button onclick="guardarEntrada()">Guardar entrada</button>
+    </div>
+
+    <!-- MÓDULO 3 -->
+    <div class="modulo">
+        <h2>3. Salida de Dinero</h2>
+        <input type="number" id="salidaMonto" placeholder="Monto de salida">
+        <input type="text" id="salidaDesc" placeholder="Descripción">
+        <button onclick="guardarSalida()">Guardar salida</button>
+    </div>
+
+    <button onclick="exportarExcel()">📊 Guardar todo en Excel</button>
+
+    <script>
+        let herramientas = [];
+        let entradas = [];
+        let salidas = [];
+
+        function fechaActual() {
+            return new Date().toLocaleString();
+        }
+
+        function guardarHerramienta() {
+            let h = document.getElementById("herramienta").value;
+            let c = document.getElementById("cliente").value;
+
+            if (h === "" || c === "") return alert("Complete todos los campos");
+
+            herramientas.push({
+                Fecha: fechaActual(),
+                Herramienta: h,
+                Cliente: c
+            });
+
+            document.getElementById("herramienta").value = "";
+            document.getElementById("cliente").value = "";
+            alert("Herramienta registrada");
+        }
+
+        function guardarEntrada() {
+            let m = document.getElementById("entradaMonto").value;
+            let d = document.getElementById("entradaDesc").value;
+
+            if (m === "" || d === "") return alert("Complete todos los campos");
+
+            entradas.push({
+                Fecha: fechaActual(),
+                Monto: m,
+                Descripción: d
+            });
+
+            document.getElementById("entradaMonto").value = "";
+            document.getElementById("entradaDesc").value = "";
+            alert("Entrada registrada");
+        }
+
+        function guardarSalida() {
+            let m = document.getElementById("salidaMonto").value;
+            let d = document.getElementById("salidaDesc").value;
+
+            if (m === "" || d === "") return alert("Complete todos los campos");
+
+            salidas.push({
+                Fecha: fechaActual(),
+                Monto: m,
+                Descripción: d
+            });
+
+            document.getElementById("salidaMonto").value = "";
+            document.getElementById("salidaDesc").value = "";
+            alert("Salida registrada");
+        }
+
+        function exportarExcel() {
+          
+
+    let wb = XLSX.utils.book_new();
+
+    function crearHoja(datos, nombreHoja) {
+
+        if (datos.length === 0) {
+            datos = [{}];
+        }
+
+        // Crear hoja empezando en la fila 2
+        let ws = XLSX.utils.json_to_sheet(datos, { origin: "A2" });
+
+        // Obtener encabezados
+        let headers = Object.keys(datos[0]);
+
+        // Agregar encabezados en fila 1
+        XLSX.utils.sheet_add_aoa(ws, [headers], { origin: "A1" });
+
+        // Aplicar formato a encabezados
+        headers.forEach((h, i) => {
+            let cell = ws[XLSX.utils.encode_cell({ r: 0, c: i })];
+            if (cell) {
+                cell.s = {
+                    fill: {
+                        fgColor: { rgb: "FFD700" } // Amarillo
+                    },
+                    font: {
+                        bold: true
+                    },
+                    alignment: {
+                        horizontal: "center"
+                    },
+                    border: {
+                        top: { style: "thin" },
+                        bottom: { style: "thin" },
+                        left: { style: "thin" },
+                        right: { style: "thin" }
+                    }
+                };
+            }
+        });
+
+        // Ajustar ancho de columnas
+        ws["!cols"] = headers.map(h => ({
+            wch: h.length + 20
+        }));
+
+        XLSX.utils.book_append_sheet(wb, ws, nombreHoja);
+    }
+
+    crearHoja(herramientas, "Herramientas");
+    crearHoja(entradas, "Entradas de Dinero");
+    crearHoja(salidas, "Salidas de Dinero");
+
+    XLSX.writeFile(wb, "Macroafilados_registros.xlsx");
+}
+</script>
+
+        }
+    </script>
+
+</body>
+</html>
